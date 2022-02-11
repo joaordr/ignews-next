@@ -4,6 +4,8 @@ import { getPrismicClient } from '../../services/prismic';
 import { RichText } from 'prismic-dom';
 import Head from 'next/head';
 
+import styles from './post.module.scss';
+
 interface PostProps {
     post: {
         slug: string;
@@ -19,11 +21,11 @@ export default function Post({ post }: PostProps) {
             <Head>
                 <title>{post.title} | Ignews</title>
             </Head>
-            <main>
-                <article>
+            <main className={styles.container}>
+                <article className={styles.post}>
                     <h1>{post.title}</h1>
                     <time>{post.updatedAt}</time>
-                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                    <div className={styles.postContent} dangerouslySetInnerHTML={{ __html: post.content }} />
                 </article>
 
             </main>
@@ -34,6 +36,15 @@ export default function Post({ post }: PostProps) {
 export const getServerSideProps: GetServerSideProps = async ({ req, params }) => {
     const session = await getSession({ req });
     const { slug } = params;
+
+    if (!session?.activeSubscription) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
 
     const prismic = getPrismicClient();
     const response = await prismic.getByUID<any>('post', String(slug), {});

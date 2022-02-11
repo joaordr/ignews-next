@@ -19,6 +19,23 @@ export default NextAuth({
         }),
     ],
     callbacks: {
+        session: async ({ session }) => {
+            try {
+                const userActiveSubscription = await <any>fauna.query(
+                    q.Get(
+                        q.Match(
+                            q.Index('subscription_status_by_email_2'),
+                            q.Casefold(session.user.email)
+                        )
+                    )
+                )
+
+                return { ...session, activeSubscription: userActiveSubscription.data.status === 'active' ? true : false };
+            } catch (error) {
+                console.log(error.message)
+                return { ...session, activeSubscription: false }
+            }
+        },
         async signIn(user, account, profile) {
             try {
                 const { email } = user.user;
@@ -46,7 +63,7 @@ export default NextAuth({
                 )
 
                 return true;
-            } catch(error) {
+            } catch (error) {
                 console.log(error);
                 return false;
             }
