@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { signIn, useSession } from 'next-auth/react';
 import router from 'next/router';
 import { api } from '../../services/api';
