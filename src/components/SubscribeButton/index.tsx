@@ -1,15 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { signIn, useSession } from 'next-auth/react';
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import { api } from '../../services/api';
 import { getStripeJs } from '../../services/stripe-js';
 import styles from './styles.module.scss';
 
-interface SubscribeButtonProps {
-    priceId: string;
-}
-
-export default function subscribeButton({ priceId }: SubscribeButtonProps) {
+export default function subscribeButton() {
+    const router = useRouter();
     const { data: session } = useSession();
 
     async function handleSubscribe() {
